@@ -8,10 +8,10 @@ import com.javaweb.DAO.CaloteiroDAO;
 import com.javaweb.bean.Caloteiro;
 
 public class Main {
-	private static Caloteiro caloteiro = new Caloteiro();
-	
 	public static void main(String[] args) {
-		int action = Integer.parseInt(JOptionPane.showInputDialog("\nInforme um inteiro de acordo com o índice da ação desejada: \n 1. Adicionar um Caloteiro  \n 2. Listar Caloteiros \n 3. Remover caloteiro da lista negra \n 4. Sair"));
+		int action = Integer.parseInt(JOptionPane.showInputDialog("\nInforme um inteiro de acordo com o índice da ação desejada:"+
+				" \n 1. Adicionar um Caloteiro  \n 2. Listar Caloteiros \n 3. Remover caloteiro da lista negra"+
+				" \n 4. Atualizar dados de um caloteiro \n 5. Sair"));
 		switch(action){
 			case 1:
 				add();main(args); break;
@@ -20,6 +20,8 @@ public class Main {
 			case 3:
 				remove();main(args);break;
 			case 4:
+				update();main(args);break;
+			case 5:
 				System.out.println("By :)");
 				break;
 			default:
@@ -28,12 +30,17 @@ public class Main {
 	}
 	
 	private static void add(){
+		Caloteiro caloteiro = new Caloteiro();
 		caloteiro.setNome(JOptionPane.showInputDialog("Nome"));
 		caloteiro.setEmail(JOptionPane.showInputDialog("Email"));
 		caloteiro.setDevendo(Integer.parseInt(JOptionPane.showInputDialog("Valor")));
 		caloteiro.setData(Calendar.getInstance());
 		
-		CaloteiroDAO.getInstance().add(caloteiro);
+		if(CaloteiroDAO.getInstance().add(caloteiro)){
+			JOptionPane.showMessageDialog(null, "Caloteiro cadastrado com sucesso!");
+		} else{
+			JOptionPane.showMessageDialog(null, "Erro ao tentar cadatrar caloteiro!");
+		}
 	}
 	
 	private static void list(){
@@ -45,11 +52,44 @@ public class Main {
 					+ caloteiro.getEmail() + "\nDívida: R$" + caloteiro.getDevendo()+ "\nData da dívida: " + caloteiro.getData().getTime();
 		}
 		JOptionPane.showMessageDialog(null, list);
-		
 	}
 	
 	private static void remove(){
 		int id = Integer.parseInt(JOptionPane.showInputDialog("Informe o id"));
-		CaloteiroDAO.getInstance().remove(id);
+		if(CaloteiroDAO.getInstance().getCaloteiro(id) != null){
+			CaloteiroDAO.getInstance().remove(id);
+		} else{
+			JOptionPane.showMessageDialog(null, "ID "+ id +" inválido");
+		}
+	}
+	
+	private static void update(){
+		int id = Integer.parseInt(JOptionPane.showInputDialog("Informe o id"));
+		Caloteiro caloteiroOld = CaloteiroDAO.getInstance().getCaloteiro(id);
+		if(caloteiroOld != null){
+			Caloteiro caloteiro = new Caloteiro();
+			
+			caloteiro.setNome(JOptionPane.showInputDialog("Novo nome."+
+					"\nDeixe o campo vazio para não atualizar dado \nNome antigo: " + caloteiroOld.getNome()));
+			caloteiro.setEmail(JOptionPane.showInputDialog("Novo email."+
+					"\nDeixe o campo vazio para não atualizar dado \nEmail antigo: " + caloteiroOld.getEmail()));
+			try {
+				caloteiro.setDevendo(Integer.parseInt(JOptionPane.showInputDialog("Novo valor."+
+						"\nDeixe o campo vazio para não atualizar dado \nValor antigo: " + caloteiroOld.getDevendo())));	
+			} catch (Exception e) {
+				caloteiro.setDevendo(0);
+			}
+			caloteiro.setData(Calendar.getInstance());
+			
+			if(caloteiro.getNome().isEmpty()){caloteiro.setNome(caloteiroOld.getNome());}
+			if(caloteiro.getEmail().isEmpty()){caloteiro.setEmail(caloteiroOld.getEmail());}
+			if(caloteiro.getDevendo() == 0){caloteiro.setDevendo(caloteiroOld.getDevendo());}
+			
+			if(CaloteiroDAO.getInstance().update(id, caloteiro)){
+				JOptionPane.showMessageDialog(null, "Dados atualizados com sucesso!");
+			}else{
+				JOptionPane.showMessageDialog(null, "Erro ao tentar atualizar dados.");
+			}
+		}
 	}
 }

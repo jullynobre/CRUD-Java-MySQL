@@ -31,7 +31,7 @@ public class CaloteiroDAO {
 		return instance;
 	}
 	
-	public void add(Caloteiro caloteiro){
+	public boolean add(Caloteiro caloteiro){
 		try {
 			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement("Insert into Caloteiro (nome, email, devendo, dataDivida) values (?, ?, ?, ?)");
 			stmt.setString(1, caloteiro.getNome());
@@ -41,11 +41,10 @@ public class CaloteiroDAO {
 			stmt.execute();
 			stmt.close();
 			connection.close();
-			System.out.println("Objeto do tipo Caloteiro gravado com sucesso!");
-			
+			return true;
 		} catch (Exception e) {
 			System.out.println("Erro ao gravar objeto do tipo Caloteiro: " + e.getMessage());
-		}
+		} return false;
 	}
 	
 	public ArrayList<Caloteiro> getList(){
@@ -61,11 +60,9 @@ public class CaloteiroDAO {
 				caloteiro.setId(rs.getInt("id"));
 				caloteiro.setDevendo(rs.getInt("devendo"));
 				
-				if(rs.getDate("DataDivida") != null){
-					Calendar calendar = Calendar.getInstance();
-					calendar.setTime(rs.getDate("dataDivida"));
-					caloteiro.setData(calendar);
-				}
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(rs.getDate("dataDivida"));
+				caloteiro.setData(calendar);
 				
 				caloteiros.add(caloteiro);
 			}
@@ -84,11 +81,24 @@ public class CaloteiroDAO {
 		Caloteiro caloteiro = new Caloteiro();
 		try {
 			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement("Select * from Caloteiro where id = '"+ id +"'");
-			
+			ResultSet rs = stmt.executeQuery();	
+			if(rs.isBeforeFirst()){
+				rs.next();
+				caloteiro.setNome(rs.getString("nome"));
+				caloteiro.setEmail(rs.getString("email"));
+				caloteiro.setId(rs.getInt("id"));
+				caloteiro.setDevendo(rs.getInt("devendo"));
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(rs.getDate("dataDivida"));
+				caloteiro.setData(calendar);
+				return caloteiro;
+			}
+			return null;
 		} catch (Exception e) {
-			// TODO: handle exception
+			System.out.println("Erro ao tentar pegar o objeto Caloteiro de id " + id);
+			e.printStackTrace();
 		}
-		return caloteiro;
+		return null;
 	}
 	
 	public void remove(int id){
@@ -101,6 +111,25 @@ public class CaloteiroDAO {
 			System.out.println("Erro ao tentar remover caloteiro: ");
 			e.printStackTrace();
 		}
-		
+	}
+	
+	public boolean update(int id, Caloteiro caloteiro){
+		try {
+			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement("Update Caloteiro set "+
+					"nome=?, email=?, devendo=?, dataDivida=? where id=?;");
+			stmt.setString(1, caloteiro.getNome());
+			stmt.setString(2, caloteiro.getEmail());
+			stmt.setInt(3, caloteiro.getDevendo());
+			stmt.setDate(4, new Date(caloteiro.getData().getTimeInMillis()));
+			stmt.setInt(5, id);
+			
+			stmt.execute();
+			stmt.close();
+			connection.close();
+			return true;
+		} catch (SQLException e) {
+			System.out.println("Erro ao tentar atualizar caloteiro: ");
+			e.printStackTrace();
+		} return false;
 	}
 }

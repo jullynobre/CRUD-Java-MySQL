@@ -1,6 +1,6 @@
-CREATE DATABASE JavaWeb;
+CREATE DATABASE crudjavamysql;
 
-USE JavaWeb;
+USE crudjavamysql;
 
 CREATE TABLE caloteiro(
 	id INT AUTO_INCREMENT PRIMARY KEY,

@@ -17,7 +17,7 @@ public class ConnectionFactory {
 	public Connection getConnection(){
 		try {
 			return DriverManager.getConnection(
-					"jdbc:mysql://localhost/JavaWeb", "root", "");
+					"jdbc:mysql://localhost/crudjavamysql", "root", "1234");
 		} catch (SQLException e) {
 			System.out.println("Erro ao tentar abrir conexão com o banco: " + e.getMessage());
 		} return null;
