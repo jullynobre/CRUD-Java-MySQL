@@ -80,7 +80,8 @@ public class CaloteiroDAO {
 	public Caloteiro getCaloteiro(int id){
 		Caloteiro caloteiro = new Caloteiro();
 		try {
-			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement("Select * from Caloteiro where id = '"+ id +"'");
+			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement("Select * from Caloteiro where id=?");
+			stmt.setInt(1, id);
 			ResultSet rs = stmt.executeQuery();	
 			if(rs.isBeforeFirst()){
 				rs.next();
@@ -103,7 +104,8 @@ public class CaloteiroDAO {
 	
 	public void remove(int id){
 		try {
-			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement("Delete from Caloteiro where id = '"+ id +"';");
+			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement("Delete from Caloteiro where id=?;");
+			stmt.setInt(1, id);
 			stmt.execute();
 			stmt.close();
 			connection.close();
