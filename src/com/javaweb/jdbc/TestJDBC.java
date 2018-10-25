@@ -5,14 +5,13 @@ import java.sql.SQLException;
 
 public class TestJDBC {
 	public static void main(String[] args) {
-		Connection connection = ConnectionFactory.getInstance().getConnection();
-		System.out.println("Conexão aberta!");
-		
-		try {
-			connection.close();
-			System.out.println("Conexão Fechada!");
+		try(Connection connection = ConnectionFactory.getInstance().getConnection()) {
+			System.out.println("Conexï¿½o aberta!");
+
+
 		} catch (SQLException e) {
 			System.out.println("Erro: " + e.getMessage());
 		}
+		System.out.println("Conexï¿½o Fechada!");
 	}
 }
