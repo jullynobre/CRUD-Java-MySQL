@@ -48,7 +48,7 @@ public class CaloteiroDAO {
 	}
 	
 	public ArrayList<Caloteiro> getList(){
-		ArrayList<Caloteiro> caloteiros = new ArrayList<Caloteiro>();
+		ArrayList<Caloteiro> caloteiros = new ArrayList<>();
 		
 		try {
 			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement("Select * from Caloteiro");
